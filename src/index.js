@@ -11,7 +11,7 @@ const app = express();
 
 // Konfigurasi express-session
 app.use(session({
-    secret: 'kunci-rahasia-anda', // Ganti ini dengan kunci rahasia yang lebih aman di produksi
+    secret: 'sekret', // Ganti ini dengan kunci rahasia yang lebih aman di produksi
     resave: false,
     saveUninitialized: false
 }));
@@ -26,22 +26,22 @@ app.use("/api/v1", userRouter);
 // app.use("/api/v1", ProductRouter);
 // app.use("/api/v1", cartRouter);
 // app.use("/api/v1", productRouter);
-const hashPasswordMiddleware = async (req, res, next) => {
-    if (req.body.password) {
-        try {
-            const hashedPassword = await bcrypt.hash(req.body.password, 10);
-            req.body.password = hashedPassword;
-            next();
-        } catch (error) {
-            return res.status(500).json({ error: "Gagal meng-hash kata sandi" });
-        }
-    } else {
-        next();
-    }
-};
+// const hashPasswordMiddleware = async (req, res, next) => {
+//     if (req.body.password) {
+//         try {
+//             const hashedPassword = await bcrypt.hash(req.body.password, 10);
+//             req.body.password = hashedPassword;
+//             next();
+//         } catch (error) {
+//             return res.status(500).json({ error: "Gagal meng-hash kata sandi" });
+//         }
+//     } else {
+//         next();
+//     }
+// };
 
 // Terapkan hashPasswordMiddleware pada rute yang memerlukan peng-hash-an kata sandi
-app.use("/api/v1/register", hashPasswordMiddleware);
+// app.use("/api/v1/register", hashPasswordMiddleware);
 
 // Rute
 app.use("/api/v1", userRouter);
