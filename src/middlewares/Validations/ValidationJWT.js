@@ -8,11 +8,11 @@ const validateJWT = (req, res, next) => {
         throw new Unauthorized("Please Login First");
     }
 
-    const token = userToken.split(" ")[1];
+    // const token = userToken.split(" ")[1];
 
-    if (!token) {
-        throw new Unauthorized("Please Login First");
-    }
+    // if (!token) {
+    //     throw new Unauthorized("Please Login First");
+    // }
 
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
