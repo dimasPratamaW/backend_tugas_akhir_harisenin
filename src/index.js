@@ -1,5 +1,6 @@
 require("dotenv").config();
 const express = require("express");
+const session = require('express-session');
 const cors = require("cors");
 const errorHandler = require("./utils/Helper/ErrorHandler");
 const responseHandler = require("./utils/Helper/ResponseHandler");
@@ -7,6 +8,14 @@ const { sequelize } = require("./configs/Database");
 const userRouter = require("./routes/Users/UserRouter");
 
 const app = express();
+
+// Konfigurasi express-session
+app.use(session({
+    secret: 'kunci-rahasia-anda', // Ganti ini dengan kunci rahasia yang lebih aman di produksi
+    resave: false,
+    saveUninitialized: false
+}));
+
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -17,7 +26,28 @@ app.use("/api/v1", userRouter);
 // app.use("/api/v1", ProductRouter);
 // app.use("/api/v1", cartRouter);
 // app.use("/api/v1", productRouter);
+const hashPasswordMiddleware = async (req, res, next) => {
+    if (req.body.password) {
+        try {
+            const hashedPassword = await bcrypt.hash(req.body.password, 10);
+            req.body.password = hashedPassword;
+            next();
+        } catch (error) {
+            return res.status(500).json({ error: "Gagal meng-hash kata sandi" });
+        }
+    } else {
+        next();
+    }
+};
+
+// Terapkan hashPasswordMiddleware pada rute yang memerlukan peng-hash-an kata sandi
+app.use("/api/v1/register", hashPasswordMiddleware);
+
+// Rute
+app.use("/api/v1", userRouter);
+
 app.use(errorHandler);
+
 
 sequelize
     .authenticate()
