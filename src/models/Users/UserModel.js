@@ -1,6 +1,7 @@
 const { Database } = require("../../utils/DataBaseAppsUtils");
 const { DataTypes } = require("sequelize");
 
+
 const UserModel = Database.define(
     "UserModel",
     {
@@ -22,26 +23,26 @@ const UserModel = Database.define(
             field: "password",
             type: DataTypes.STRING,
         },
-        profilePicture: {
-            field: "profile_picture",
-            type: DataTypes.STRING,
-        },
-        token: {
-            field: "token",
-            type: DataTypes.STRING,
-        },
-        createdAt: {
-            field: "created_at",
-            type: DataTypes.DATE,
-            defaultValue: DataTypes.NOW,
-            allowNull: false,
-        },
-        updatedAt: {
-            field: "updated_at",
-            type: DataTypes.DATE,
-            defaultValue: DataTypes.NOW,
-            allowNull: false,
-        },
+        // profilePicture: {
+        //     field: "profile_picture",
+        //     type: DataTypes.STRING,
+        // },
+        // token: {
+        //     field: "token",
+        //     type: DataTypes.STRING,
+        // },
+        // createdAt: {
+        //     field: "created_at",
+        //     type: DataTypes.DATE,
+        //     defaultValue: DataTypes.NOW,
+        //     allowNull: false,
+        // },
+        // updatedAt: {
+        //     field: "updated_at",
+        //     type: DataTypes.DATE,
+        //     defaultValue: DataTypes.NOW,
+        //     allowNull: false,
+        // },
     },
     {
         tableName: "users",

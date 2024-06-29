@@ -8,30 +8,23 @@ const {
     loginValidationUtils,
 } = require("../../utils/Validations/ValidationBodyUtils");
 const validateJWT = require("../../middlewares/Validations/ValidationJWT");
-const userController = require("../../controllers/UserController");
+const UserController = require("../../controllers/UserController");
 
-router.get("/all-user", validateJWT, userController.getAllUser);
-router.get("/user/:id", validateJWT, userController.getUserById);
-router.post(
-    "/register-user",
-    registerValidationUtils(),
-    validationBody,
-    userController.registerUser,
-);
-router.post(
-    "/login-user",
-    loginValidationUtils(),
-    validationBody,
-    userController.loginUser,
-);
-// router.post("/forgot-password", userController.forgotPassword);
-// router.post("/reset-password", userController.resetPassword);
-// router.post(
-//     "/user/change-password",
-//     validateJWT,
-//     userController.changePassword,
-// );
-// router.put("/update-user", validateJWT, userController.updateUser);
-router.delete("/delete-user", validateJWT, userController.deleteUser);
+// POST /api/v1/register - Registrasi pengguna
+router.post("/register", registerValidationUtils(), validationBody, UserController.registerUser);
+
+// POST /api/v1/login - Login pengguna
+router.post("/login", loginValidationUtils(), validationBody, UserController.loginUser);
+
+// GET /api/v1/all-user - Mendapatkan semua pengguna
+router.get("/all-user", validateJWT, UserController.getAllUser);
+
+// GET /api/v1/user/:id - Mendapatkan pengguna berdasarkan ID
+router.get("/user/:id", validateJWT, UserController.getUserById);
+
+// DELETE /api/v1/delete-user - Menghapus pengguna
+router.delete("/delete-user", validateJWT, UserController.deleteUser);
+
+// Tambahan rute lainnya bisa ditambahkan di sini
 
 module.exports = router;
