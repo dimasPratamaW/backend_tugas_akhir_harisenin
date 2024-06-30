@@ -23,6 +23,7 @@ router.get("/all-user", validateJWT, UserController.getAllUser);
 router.get("/user/:id", validateJWT, UserController.getUserById);
 
 // DELETE /api/v1/delete-user - Menghapus pengguna
+//callback (link apinya, middleware(exception return itu next),)
 router.delete("/delete-user", validateJWT, UserController.deleteUser);
 
 // Tambahan rute lainnya bisa ditambahkan di sini
