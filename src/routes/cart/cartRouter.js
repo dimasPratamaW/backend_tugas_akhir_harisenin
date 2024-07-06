@@ -3,56 +3,210 @@ const router_order = express.Router();
 const OrderModel = require("../../models/Users/OrderModel");
 const { orderDeto } = require("../../dtos/users/orderDeto");
 const userRepository = require("../../repositories/Users/UserRepository");
-// POST /api/v1/register - Registrasi order
-router_order.post("/order", registerOrder);
 
+const { mapper } = require("../../profiles/index");
+const UserModel = require("../../models/Users/UserModel");
+const { Op } = require("sequelize");
+const { NotFound } = require("http-errors");
 
-async function registerOrder(req, res, next) {
+router_order.post("/order", createOrder);
+router_order.get("/order/:id", getOrder);
+router_order.put("/order/:id", updateOrder);
+router_order.delete("/order/:id", deleteOrder);
+router_order.get("/order/allorder/:id", getAllOrder);
+
+async function createOrder(req, res, next) {
     try {
-        const newOrder = await takeOrder({
-            id_item: req.body.id_item,
-            item_name: req.body.item_name,
-            quantity_item: req.body.quantity_item,
-            item_price: req.body.item_price,
-            total_price: req.body.total_price,
-            id_user:req.body.id_user,
+        const {
+            id_item,
+            item_name,
+            quantity_item,
+            item_price,
+            total_price,
+            id_user,
+        } = req.body;
+
+        const user = await UserModel.findOne({
+            where: {
+                id: { [Op.eq]: id_user },
+            },
         });
-        res.status(201).json(newOrder);
+
+        if (!user) {
+            throw new NotFound("user not found");
+        }
+        // console.log(JSON.stringify(user,null,2))
+
+        const order = await OrderModel.create({
+            id_item: id_item,
+            item_name: item_name,
+            quantity_item: quantity_item,
+            item_price: item_price,
+            total_price: total_price,
+            id_user: id_user,
+        });
+        const getOrder = await OrderModel.findOne({
+            where: {
+                id_order: { [Op.eq]: order.getDataValue("id_order") },
+            },
+            attributes: ["id_item", "total_price", "id_order"],
+            include: [
+                {
+                    model: UserModel,
+                    attributes: ["id", "name"],
+                },
+            ],
+        });
+
+        res.status(201).json(getOrder);
+    } catch (error) {
+        next(error);
+    }
+}
+
+async function updateOrder(req, res, next) {
+    try {
+        const {
+            id_item,
+            item_name,
+            quantity_item,
+            item_price,
+            total_price,
+            id_user,
+        } = req.body;
+
+        const id_order = req.params.id;
+
+        const user = await UserModel.findOne({
+            where: {
+                id: { [Op.eq]: id_user },
+            },
+        });
+
+        if (!user) {
+            throw new NotFound("user not found");
+        }
+        // console.log(JSON.stringify(user,null,2))
+
+        const order = await OrderModel.update(
+            {
+                id_item: id_item,
+                item_name: item_name,
+                quantity_item: quantity_item,
+                item_price: item_price,
+                total_price: total_price,
+                id_user: id_user,
+            },
+            {
+                where: {
+                    id_order: { [Op.eq]: id_order },
+                },
+            },
+        );
+        console.log(JSON.stringify(order))
+        const getOrder = await OrderModel.findOne({
+            where: {
+                id_order: { [Op.eq]: id_order },
+            },
+            attributes: ["id_item", "total_price", "id_order"],
+            include: [
+                {
+                    model: UserModel,
+                    attributes: ["id", "name"],
+                },
+            ],
+        });
+
+        res.status(201).json(getOrder);
+    } catch (error) {
+        next(error);
+    }
+}
+
+async function getOrder(req, res, next) {
+    try {
+        const id_order = req.params.id;
+        console.log(id_order);
+        const getOrder = await OrderModel.findOne({
+            where: {
+                id_order: { [Op.eq]: id_order },
+            },
+            attributes: ["id_item", "total_price", "id_order"],
+            include: [
+                {
+                    model: UserModel,
+                    attributes: ["id", "name"],
+                },
+            ],
+        });
+        console.log(JSON.stringify(getOrder));
+
+        res.status(201).json(getOrder);
+    } catch (error) {
+        next(error);
+    }
+}
+
+async function getAllOrder(req, res, next) {
+    try {
+        const id_user = req.params.id;
+        console.log(id_user);
+        const getOrder = await OrderModel.findAll({
+            where: {
+                id_user: { [Op.eq]: id_user},
+            },
+            attributes: ["id_item", "total_price", "id_order"],
+            include: [
+                {
+                    model: UserModel,
+                    attributes: ["id", "name"],
+                },
+            ],
+        });
+        console.log(JSON.stringify(getOrder));
+
+        res.status(201).json(getOrder);
     } catch (error) {
         next(error);
     }
 }
 
 
-async function takeOrder(args) {
-    const newOrder = createOrder({
-        id_item: args.id_item,
-        item_name: args.item_name,
-        quantity_item: args.quantity_item,
-        item_price: args.item_price,
-        total_price: args.total_price,
-        id_user:args.id_user
-    });
-        console.log(newOrder)
-        return await getUserById({ id: newOrder.id_user });
-}
 
-async function getUserById(args) {
-    const getOrder = await userRepository.getUserById({ id: args.id_user });
+async function deleteOrder(req, res, next) {
+    try {
+        const id_order = req.params.id;
+        console.log(id_order);
+        const getOrder = await OrderModel.findOne({
+            where: {
+                id_order: { [Op.eq]: id_order },
+            },
+            attributes: ["id_item", "total_price", "id_order"],
+            include: [
+                {
+                    model: UserModel,
+                    attributes: ["id", "name"],
+                },
+            ],
+        });
+        console.log(JSON.stringify(getOrder));
 
-    if (!getOrder) {
-        throw new NotFound("User not found");
+        if(!getOrder){
+            throw new NotFound("order not found");
+        }
+
+
+        await OrderModel.destroy({
+            where:{
+                id_order: { [Op.eq]: id_order },
+            }
+        })
+
+        res.status(204).json(true);
+    } catch (error) {
+        next(error);
     }
-    return mapper.map(getOrder, OrderModel, orderDeto);
 }
-
-async function createOrder(orderData) {
-    return await OrderModel.create(orderData);
-}
-
-
-// // GET /api/v1/user/:id - Mendapatkan pengguna berdasarkan ID
-// router.get("/user/:id", UserController.getUserById);
 
 
 module.exports = router_order;
