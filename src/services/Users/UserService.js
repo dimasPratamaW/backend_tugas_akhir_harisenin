@@ -42,15 +42,6 @@ async function loginUser(args) {
         throw new Unauthorized("Invalid password");
     }
 
-    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
-        expiresIn: "365d",
-    });
-
-    await userRepository.insertUserToken({
-        id: user.id,
-        token: token,
-    });
-
     return await getUserById({ id: user.id });
 }
 

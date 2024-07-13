@@ -50,4 +50,14 @@ const UserModel = Database.define(
     },
 );
 
+console.log(UserModel)
+
+
+// UserModel.belongsTo(productModel,{
+//     foreignKey:{
+//         field:"id_user",
+//         name:"idUser"
+//     }
+// })
+
 module.exports = UserModel;

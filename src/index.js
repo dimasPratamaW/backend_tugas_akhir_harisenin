@@ -6,6 +6,8 @@ const errorHandler = require("./utils/Helper/ErrorHandler");
 const responseHandler = require("./utils/Helper/ResponseHandler");
 const { sequelize } = require("./configs/Database");
 const userRouter = require("./routes/Users/UserRouter");
+const cartRouter = require("./routes/cart/cartRouter");
+const productRouter = require("./routes/product/productRouter")
 
 const app = express();
 
@@ -23,8 +25,9 @@ app.use(cors({ origin: true, credentials: true }));
 app.use(responseHandler);
 
 app.use("/api/v1", userRouter);
-// app.use("/api/v1", ProductRouter);
-// app.use("/api/v1", cartRouter);
+app.use("/api/v1", productRouter);
+app.use("/api/v1", cartRouter);
+
 // app.use("/api/v1", productRouter);
 // const hashPasswordMiddleware = async (req, res, next) => {
 //     if (req.body.password) {
